@@ -504,6 +504,21 @@ class Abstractexecutor:
                         assign_value(operation.operand_list[0],AbstractType.ZERO)
                         self.test(label_name, operation_index+1,limit_time)
                         return AbstractType.Finish
+                if len(operation.operand_list) ==2:
+                        result = Sign_abstraction.__imul__(Sign_abstraction(get_value(operation.operand_list[0])),Sign_abstraction(get_value(operation.operand_list[1])))
+                        assign_value(operation.operand_list[0], result.type)
+                        if get_value(operation.operand_list[0]) == AbstractType.ANY_INT:
+                            # print("cause the imul",operation.operand_list[0], "value=ANY_INT, it should be divide as three types")
+                            original_register_dict = self.register_dict.copy()
+                            assign_value(operation.operand_list[0], AbstractType.POSITIVE_INT)
+                            self.test(label_name, operation_index + 1, limit_time)
+                            self.register_dict = original_register_dict.copy()
+                            assign_value(operation.operand_list[0], AbstractType.NEGATIVE_INT)
+                            self.test(label_name, operation_index + 1, limit_time)
+                            self.register_dict = original_register_dict.copy()
+                            assign_value(operation.operand_list[0], AbstractType.ZERO)
+                            self.test(label_name, operation_index + 1, limit_time)
+                            return AbstractType.Finish
 
             case OpType.SAL:
                 pass
@@ -720,36 +735,11 @@ class Abstractexecutor:
 
 
 if __name__ == "__main__":
-    # parser = Parser("TestCode\\foo.c")
-    # parser = Parser("TestCode\\div.c")
-    # parser = Parser("TestCode\\userDefinedException.c")
     parser = Parser("userDefinedException.c")
 
     executor = Abstractexecutor(parser)
     start_time = time.time()
 
-    # executor.run("loop", [8])
-    # executor.run("loop", [3])
-    # executor.run("fib2", [-1])
-    # executor.run("loop")
-    # executor.run("sum")
-    # executor.run("div0", [1])
-    # executor.run("div_a_b1", [1, 2])
-    # executor.run("div_a_b5", [1, 2])
-    # executor.run("array1", [2])
-    # executor.run("array2", [2])
-    # executor.run("array3", [4])
-
-    # executor.test("div0", 1, 10)
-    # executor.test("div_a_b1", 2, 10)
-    # executor.test("div_a_b2", 2, 10)
-    # executor.test("div_a_b3", 2, 10)
-    # executor.test("div_a_b4", 2, 5)
-    # executor.test("div_a_b5", 2, 5)
-    # executor.test("fib1", 1, 5)
-    # executor.test("user1", 3, 16)
-    # executor.test("array1", 1, 5)
-    # executor.test("array4", 1, 5)
     executor.testfirst("fib3")
     end_time = time.time()
     elapsed_time = end_time - start_time
